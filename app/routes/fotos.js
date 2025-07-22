@@ -35,5 +35,43 @@ router.get('/findAll/view', function(req, res, next) {
   .catch(error => res.status(400).send(error));
 });
 
+router.get('/findById/json/:id', function(req, res, next) {
+  Foto.findByPk(req.params.id, {
+    attributes: { exclude: ['updatedAt'] },
+    include: {
+      model: Etiqueta,
+      attributes: ['id', 'texto'],
+      through: { attributes: [] }
+    }
+  })
+  .then(foto => {
+    if (foto) {
+      res.json(foto);
+    } else {
+      res.status(404).send({ message: 'Foto no encontrada' });
+    }
+  })
+  .catch(error => res.status(400).send(error));
+});
+
+router.get('/findById/view/:id', function(req, res, next) {
+  Foto.findByPk(req.params.id, {
+    attributes: { exclude: ['updatedAt'] },
+    include: {
+      model: Etiqueta,
+      attributes: ['id', 'texto'],
+      through: { attributes: [] }
+    }
+  })
+  .then(foto => {
+    if (foto) {
+      res.render('search/foto', { title: 'Detalle de Foto', foto: foto });
+    } else {
+      res.status(404).send({ message: 'Foto no encontrada' });
+    }
+  })
+  .catch(error => res.status(400).send(error));
+});
+
 
 module.exports = router;
